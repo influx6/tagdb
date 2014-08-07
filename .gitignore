@@ -1,3 +1,6 @@
 ./packages
 *.lock
 .out
+./packages
+*.lock
+.out
