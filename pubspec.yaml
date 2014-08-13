@@ -2,13 +2,20 @@ name: tagdb
 author: Alexander Ewetumo <trinoxf@gmail.com>
 homepage: http://github.com/influx6/tagdb
 version: 0.0.1
-description: 'creation of a unified db definition capable of handling different backend'
+description: 'db definition capable of handling different backends'
 dependencies:
    mongo_dart: any
-   alchemy: any
+   redis_client: any
    couchclient: any
    browser: any
    unittest: any
    args: any
    path: any
-   dart_redis: any    
+   hub: any
+   rio: any
+   lawndart: any
+dependency_overrides:
+  rio:
+    path: ../rio
+  hub:
+    path: ../hub
