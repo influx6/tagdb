@@ -15,41 +15,41 @@ void main(){
     print('opened couchdb $f');
 
     couch.query({
-      'id':'drop_db',
+      '@':'drop_db',
       'db':'page_reviews'
     }).then(Funcs.tag('drop_db')).then((n){
 
         couch.query({
-          'id':'create_db',
+          '@':'create_db',
           'db':'page_reviews'
         }).then(Funcs.tag('create_db')).then((n){
             couch.query({
-              'id':'save_doc',
+              '@':'save_doc',
               'db':'page_reviews',
               'data': {
-                'id': 'fox_news',
+                '@': 'fox_news',
                 'article':" we totally wiped them out!"
               }
             }).then(Funcs.tag('save_doc'));
 
 
             couch.query({
-              'id':'save_doc',
+              '@':'save_doc',
               'db':'page_reviews',
               'doc_id': '32-rivers',
               'data': {
-                'id': 'mbc_news',
+                '@': 'mbc_news',
                 'article':" we totally wiped them out!"
               }
             }).then(Funcs.tag('save_doc_rivers')).then((n){
                 
                 couch.query({
-                  'id':'get_doc',
+                  '@':'get_doc',
                   'db':'page_reviews',
                   'doc_id': '32-rivers',
                 }).then(Funcs.tag('get_doc')).then((n){
                   couch.query({
-                    'id':'drop_doc',
+                    '@':'drop_doc',
                     'db':'page_reviews',
                     'doc_id': '32-rivers',
                     'rev_id': Enums.first(n.metaData['etag'])

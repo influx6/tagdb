@@ -3,28 +3,10 @@ part of tagdb;
 abstract class TagDBConnectable{
   Switch _capable;
   TagQuerable queries;
-  MapDecorator conf;
   Completer _opened,_closed;
 
-  TagDBConnectable(Map c,this.queries,[Function queryValidator]){
+  TagDBConnectable(Map c,this.queries){
     this._capable = Switch.create();
-    this.conf = MapDecorator.useMap(Enums.merge({
-      'id': 'default',
-      'authenticate': false,
-      'ssl': false,
-      'digest': false,
-      'useUrl': true,
-      'username': null,
-      'realm': null,
-      'password': null,
-      'cert': null,
-      'certkey':null,
-      'url': null,
-      'authurl': null,
-      'port': 0,
-      'path':''
-    },c));
-
     this._opened = new Completer();
     this._closed = new Completer();
 
@@ -44,7 +26,7 @@ abstract class TagDBConnectable{
   Future get whenOpen => this._opened.future;
   Future get whenClosed => this._closed.future;
 
-  Future<TagCollection> query(Map m){
+  Future query(Map m){
     if(!this.capable) 
       return new Future.error(new Exception('Connection is not alive,first call the open method before this'));
     return this.whenOpen.then((f){
@@ -80,14 +62,18 @@ class TagQuerable{
   void addAll(Map<String,Map> m) => this._queries.updateAllFrom(m);
   TagQuerable clone() => TagQuerable.create(new Map.from(this._queries.core));
 
-  Future<TagCollection> process(Map m,TagDBConnection db){
-    if(!this.has(m['id'])) return null;
-    var query = this.get(m['id']);
-    if(query.containsKey('condition'))
-      if(Valids.isFalse(query['condition'](m))) return null;
-    var q = query['query'];
-    if(Valids.exist(q) && q is TagQuery) return q.process(db,m);
-    return null;
+  Future process(Map m,TagDBConnection db){
+    var query = this.get(m['@']);
+    if(Valids.exist(query)){
+        var q = query['query'];
+        if(!Valids.exist(q) || q is! TagQuery)
+          return new Future.error(new FormatException('query not found! \nQuery: $m'));
+        if(query.containsKey('condition')){
+          if(Valids.isTrue(query['condition'](m))) return q.process(db,m);
+          return new Future.error(new FormatException('query not valid! \nQuery: $m'));
+        }
+        return q.process(db,m);
+    }
   }
 
 }
@@ -98,7 +84,7 @@ class TagQuery{
   static create(n) => new TagQuery(n);
 
   TagQuery(this._handler);
-  Future<TagCollection> process(TagDBConnection db,Map m){
+  Future process(TagDBConnection db,Map m){
     return this._handler(db,m);
   }
 }
@@ -171,14 +157,83 @@ class TagCollection{
   }
 
   dynamic toJSON(){
-    return JSON.encode({ 
+    return JSON.encode({
+      'isTagCollection': true,
       'query': this.queryMap,
       'metaData': this.metaData,
-      'collections': this._collections.map((n) => n.toJSON()).toList()
+      'collection': this._collections.map((n) => n.toJSON()).toList()
     });
   }
 
   String toString(){
     return this._collections.toString();
+  }
+}
+
+
+class TagUtil{
+
+  static Future processData(dynamic data,[Map meta,Completer completer]){
+    var comp = completer != null ? completer : new Completer();
+    var col = TagCollection.create(meta);
+
+    if(Valids.notExist(data)){
+      comp.complete(null);
+      return comp.future;
+    }
+
+    Funcs.when((Valids.isMap(data) && !data.containsKey('isTagCollection')),(){
+      db.addDoc(data);
+      comp.complete(col);
+    },(){
+
+      Funcs.when((Valids.isMap(data) && data.containsKey('isTagCollection')),(){
+              var meta = data['meta'], query = data['query'], collection = data['collection'];
+              Enums.eachAsync(collection,(e,i,o,fn){
+                  col.addDoc(e);
+                  return fn(null);
+              },(_,err){
+                  comp.complete(col);
+              });
+        },(){
+
+          Funcs.when(Valids.isString(data),(){
+            col.addDoc({'val': data});
+            comp.complete(col);
+
+          },(){
+
+              Funcs.when(Valids.isInt(data),(){
+                col.addDoc({'val': data});
+                comp.complete(col);
+
+              },(){
+
+                  Funcs.when(Valids.isNum(data),(){
+                    col.addDoc({'val': data});
+                    comp.complete(col);
+
+                  },(){
+
+                      Funcs.when(Valids.isList(data),(){
+                        col.addDoc({'val': data});
+                        comp.complete(col);
+
+                      },(){
+                        col.addDoc({'val': data});
+                        comp.complete(col);
+                      });
+
+                  });
+
+              });
+
+          });
+
+      });
+
+    });
+
+    return comp.future;
   }
 }
