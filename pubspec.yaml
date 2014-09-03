@@ -8,13 +8,7 @@ dependencies:
    redis_client: any
    couchclient: any
    browser: any
-   # requestful: any
+   requestful: any
    ds: any
    hub: any
-   rio: any
    lawndart: any
-dependency_overrides:
-  hub:
-    path: ../hub
-  requestful:
-    path: ../requestful

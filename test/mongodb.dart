@@ -43,10 +43,10 @@ void main(){
     return mongo.query({
       '@':'drop',
       'db': 'mydb',
-    });
+    }).then(Funcs.tag('dropped-mydb'));
     
   }).then(Funcs.tag('mydb-drop')).then((n){
-      /*mongo.end().then((f)=> print('ending mongo'));*/
+      mongo.end().then((f)=> print('ending mongo'));
   }).catchError(Funcs.tag('mongodb error'));
 
 }

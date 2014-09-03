@@ -9,7 +9,6 @@ import 'package:hub/hub.dart';
 import 'package:mongo_dart/mongo_dart.dart' as mongo;
 import 'package:couchclient/couchclient.dart' as couch;
 import 'package:redis_client/redis_client.dart' as redis;
-import 'package:rio/rio.dart';
 
 part 'base.dart';
 
