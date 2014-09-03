@@ -1,7 +1,7 @@
 name: tagdb
 author: Alexander Ewetumo <trinoxf@gmail.com>
 homepage: http://github.com/influx6/tagdb
-version: 0.0.1
+version: 0.0.2
 description: 'db definition capable of handling different backends'
 dependencies:
    mongo_dart: any
