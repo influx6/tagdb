@@ -4,11 +4,11 @@ homepage: http://github.com/influx6/tagdb
 version: 0.0.2
 description: 'db definition capable of handling different backends'
 dependencies:
-   mongo_dart: any
-   redis_client: any
-   couchclient: any
-   browser: any
-   requestful: any
-   ds: any
-   hub: any
-   lawndart: any
+  mongo_dart: any
+  redis_client: any
+  couchclient: any
+  browser: any
+  requestful: any
+  ds: any
+  hub: any
+  lawndart: any

@@ -15,11 +15,11 @@ void main(){
         });
 
         $.test('open connection')
-        .rackAsync('open',(f,next){
+        .rackAsync('open',(f,next,g){
           f.open()
           .then((f) => next());
         })
-        .rackAsync('make operations',(t,nxt){
+        .rackAsync('make operations',(t,nxt,g){
 
             $.test('validating object construction')
             .rack('is it valid',(f){
@@ -37,7 +37,7 @@ void main(){
             .emit(t);
 
             $.test('can i save data')
-            .rackAsync('can i save animal: dog?',(f,next){
+            .rackAsync('can i save animal: dog?',(f,next,g){
               f.query({
                 '@': 'save_doc',
                 'id': 'animal',
@@ -48,7 +48,7 @@ void main(){
             .emit(t);
 
             $.test('can i get data')
-            .rackAsync('is animal equal to dog?',(f,next){
+            .rackAsync('is animal equal to dog?',(f,next,g){
               f.query({
                 '@':'get_doc',
                 'id':'animal'
@@ -59,12 +59,12 @@ void main(){
             .emit(t);
 
             $.test('total items')
-            .rackAsync('total item is one',(f,next){
+            .rackAsync('total item is one',(f,next,g){
               f.query({'@':'all_keys'})
               .then((_) => Expects.asserts(_.size,1))
               .then(Funcs.alwaysFn(next));
             })
-            .rackAsync('total item is one',(f,next){
+            .rackAsync('total item is one',(f,next,g){
               f.query({'@':'get_docs', 'id':['animal'] })
               .then((_) => Expects.asserts(_.size,1))
               .then(Funcs.alwaysFn(next));
@@ -72,7 +72,7 @@ void main(){
             .emit(t);
 
             $.test('does item exists?')
-            .rackAsync('does animal exists',(f,next){
+            .rackAsync('does animal exists',(f,next,g){
               f.query({'@':'doc_exists', 'id':'animal'})
               .then((_) => Expects.isTrue(_))
               .then(Funcs.alwaysFn(next));
@@ -80,7 +80,7 @@ void main(){
             .emit(t);
 
             $.test('can we batch?')
-            .rackAsync('batch 2 items',(f,next){
+            .rackAsync('batch 2 items',(f,next,g){
               f.query({
                 '@':'insert_all', 
                 'data':{'name':'alex','age':'25'}
@@ -91,7 +91,7 @@ void main(){
             .emit(t);
 
         })
-        .rackAsync('can we drop db',(f,next){
+        .rackAsync('can we drop db',(f,next,g){
           f.query({'@':'nuke_db'})
           .then(Funcs.alwaysFn(next));
         })
@@ -108,7 +108,7 @@ void main(){
         });
 
         $.test('open connection')
-        .rackAsync('open',(f,next){
+        .rackAsync('open',(f,next,g){
           f.open()
           .then(Funcs.tag('caller'))
           .then(Funcs.alwaysFn(next));
